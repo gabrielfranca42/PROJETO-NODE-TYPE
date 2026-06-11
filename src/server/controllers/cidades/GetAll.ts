@@ -11,23 +11,21 @@ interface IQueryProps {
     limit?: number;
     filter?: string;
 }
-
-export const getAllValidation = validation((getSchema) => ({
-    query: getSchema<IQueryProps>(yup.object().shape({
-        page: yup.number().optional().moreThan(0),
-        limit: yup.number().optional().moreThan(0),
-        id: yup.number().integer().optional().moreThan(0),
-        filter: yup.string().optional(),
+export const getAllValidation = validation(get => ({
+    query: get<IQueryProps>(yup.object().shape({
+        page: yup.number().integer().moreThan(0),
+        limit: yup.number().integer().moreThan(0),
+        id: yup.number().integer().moreThan(0),
+        filter: yup.string(),
     })),
 }));
 
+
 export const getAll = async (req: Request<{}, {}, {}, IQueryProps>, res: Response) => {
-    // CORREÇÃO: Incluído o req.query.id que estava faltando.
-    // Também definimos valores padrão caso page ou limit não sejam enviados.
+
     const { page = 1, limit = 7, filter = '', id = 0 } = req.query;
 
-    // Passando os parâmetros na ordem correta que o seu Provider espera
-    // (Ajuste a ordem dos argumentos conforme a assinatura real do seu CidadeProvider.getAll)
+   
     const result = await CidadeProvider.getAll(Number(page), Number(limit), filter, Number(id));
 
     if (result instanceof Error) {
