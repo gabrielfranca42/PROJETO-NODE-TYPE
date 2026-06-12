@@ -1,7 +1,7 @@
-import knex, { Knex } from 'knex';
+import { Knex } from 'knex';
 import path from 'path';
 
-export const  deleloment:Knex.Config = {
+export const development: Knex.Config = {
     client: 'sqlite3',
     useNullAsDefault: true,
     connection: {
@@ -14,9 +14,28 @@ export const  deleloment:Knex.Config = {
         directory: path.resolve(__dirname, 'seeds'),
     },
     pool: {
-        afterCreate: (conn, cb) => {
-            conn.run('PRAGMA foreign_keys = ON');
-            cb();
+        afterCreate: (connection: any, done: () => void) => {
+            connection.run('PRAGMA foreign_keys = ON');
+            done();
         }
     }
-}
+};
+
+export const test: Knex.Config = {
+    ...development,
+    connection: ':memory:',
+};
+
+export const production: Knex.Config = {
+    client: 'pg',
+    migrations: {
+        directory: path.resolve(__dirname, 'migrations'),
+    },
+    seeds: {
+        directory: path.resolve(__dirname, 'seeds'),
+    },
+    connection: {
+        connectionString: process.env.DATABASE_URL,
+        ssl: { rejectUnauthorized: false },
+    }
+};
