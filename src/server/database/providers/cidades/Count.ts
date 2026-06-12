@@ -8,7 +8,7 @@ export const count = async (filter: string = ''): Promise<number | Error> => {
             .where('nome', 'ilike', `%${filter}%`)
             .count<[{ count: number }]>('* as count');
             
-        if  (Numbe.isInteger(Number(count))) return Numbe(count);
+        if  (Number.isInteger(Number(count))) return Number(count);
 
 
         return new Error('Erro ao contar registros.');
